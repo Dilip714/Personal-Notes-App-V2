@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Notes App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📝 Personal Notes</h1>
+      <p class="subtitle">A simple, self-hosted notes/journal app</p>
+    </header>
+
+    <section class="note-form">
+      <input type="hidden" id="note-id" />
+      <input type="text" id="note-title" placeholder="Title" maxlength="255" />
+      <textarea id="note-content" placeholder="Write your note here..." rows="4"></textarea>
+      <div class="form-actions">
+        <button id="save-btn">Save Note</button>
+        <button id="cancel-btn" class="secondary" style="display:none;">Cancel Edit</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Your Notes</h2>
+      <div id="notes-list" class="notes-grid">
+        <p id="empty-state" class="empty">No notes yet. Create your first one above!</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
