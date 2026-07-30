@@ -1,5 +1,6 @@
 # 📝 Personal Notes App — End-to-End DevOps Deployment Pipeline
-
+## Project V2
+Rebuilt and deployed using Docker, Terraform, AWS, Kubernetes, and GitHub Actions.
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)
 ![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazonaws&logoColor=white)
