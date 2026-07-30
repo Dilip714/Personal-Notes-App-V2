@@ -35,3 +35,29 @@ resource "aws_security_group" "app" {
     Name = "${var.project_name}-app-sg"
   }
 }
+# Security Group for Interface VPC Endpoints
+
+resource "aws_security_group" "endpoint" {
+  name        = "${var.project_name}-endpoint-sg"
+  description = "Security group for VPC Interface Endpoints"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "HTTPS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-endpoint-sg"
+  }
+}

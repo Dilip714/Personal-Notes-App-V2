@@ -1,219 +1,501 @@
 # 📝 Personal Notes App — End-to-End DevOps Deployment Pipeline
 ## Project V2
-Rebuilt and deployed using Docker, Terraform, AWS, Kubernetes, and GitHub Actions.
+
+A production-style DevOps project demonstrating the complete software delivery lifecycle using **Docker**, **GitHub Actions**, **Terraform**, **AWS**, **Amazon S3**, **AWS Systems Manager**, and **Kubernetes**.
+
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)
 ![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazonaws&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5?logo=kubernetes&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI/CD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
+![Flask](https://img.shields.io/badge/Backend-Flask-black?logo=flask)
 ![License](https://img.shields.io/badge/License-MIT-green)
-
-A full-stack Notes/Journal application, containerized and deployed using a
-production-style DevOps pipeline: Docker → Docker Hub → Terraform-provisioned
-AWS infrastructure → Kubernetes, with S3 versioned static assets accessed via
-a Gateway VPC Endpoint (no NAT Gateway required).
 
 ---
 
-## 📖 Project Overview
+# 📖 Project Overview
 
-Users can create, view, edit, and delete personal notes through a clean web
-UI backed by a Flask REST API and a MySQL database. The same Docker image is
-deployed two ways to demonstrate different orchestration models:
+Personal Notes App is a full-stack Notes/Journal web application built using **Flask** and **MySQL**.
 
-1. **AWS** — a private EC2 instance provisioned entirely with Terraform.
-2. **Kubernetes (Minikube)** — a Deployment + Service for local orchestration
-   practice.
+This project demonstrates a complete DevOps workflow from local development to cloud deployment using Infrastructure as Code.
 
-## 🏗️ Architecture
+The application is deployed in two different environments:
 
-![Architecture Diagram](docs/architecture.png)
+- ☁️ **AWS Private EC2** using Terraform
+- ☸️ **Kubernetes (Minikube)**
 
-Key design decisions:
-- The application EC2 instance sits in a **private subnet** — no public IP,
-  no inbound internet access.
-- A **Gateway VPC Endpoint** for S3 is attached to the private route table,
-  so the instance can reach S3 (for static assets) without a NAT Gateway,
-  Internet Gateway, or public IP — reducing both attack surface and cost.
-- CI/CD builds and pushes the image automatically on every push to `main`.
+Unlike a traditional deployment that pulls Docker images directly from Docker Hub, this project packages the Docker image as a TAR archive, uploads it to Amazon S3, and deploys it securely to a private EC2 instance through an Amazon S3 Gateway VPC Endpoint.
 
-## 🛠️ Technologies Used
+This approach eliminates the need for a NAT Gateway while keeping the application completely private.
 
-| Layer          | Technology                          |
-|----------------|--------------------------------------|
-| Frontend       | HTML, CSS, JavaScript                |
-| Backend        | Python, Flask, Gunicorn              |
-| Database       | MySQL 8.0                            |
-| Containers     | Docker, Docker Compose               |
-| IaC            | Terraform (AWS provider ~> 5.0)      |
-| Cloud          | AWS (VPC, EC2, S3, IAM, VPC Endpoint)|
-| CI/CD          | GitHub Actions                       |
-| Orchestration  | Kubernetes (Minikube)                |
-| Diagramming    | Python `diagrams` library            |
+---
 
-## 📁 Folder Structure
+# ✨ Features
+
+- Create Notes
+- Edit Notes
+- Delete Notes
+- View Notes
+- Health Check Endpoint
+- Responsive UI
+- Dockerized Application
+- Infrastructure as Code
+- Automated Deployment
+- Kubernetes Deployment
+
+---
+
+# 🏗️ Architecture
 
 ```
-notes-app/
-├── app/                        # Flask application
+                    Developer
+                        │
+                        ▼
+                   GitHub Repository
+                        │
+                        ▼
+                 GitHub Actions CI
+                        │
+                        ▼
+                 Docker Image Build
+                        │
+                        ▼
+                   Docker Hub
+                        │
+                 docker save
+                        │
+                        ▼
+             Docker Image Archive (.tar)
+                        │
+                        ▼
+                 Amazon S3 Bucket
+                (Versioning Enabled)
+                        │
+            S3 Gateway VPC Endpoint
+                        │
+                        ▼
+              Private EC2 Instance
+              (Amazon Linux 2023)
+                        │
+             EC2 User Data Script
+                        │
+         aws s3 cp → docker load
+                        │
+                 docker run
+                        │
+                        ▼
+            Personal Notes App
+                        │
+                        ▼
+         AWS Systems Manager
+          (Session Manager)
+```
+
+---
+
+# 🛡️ Architecture Highlights
+
+- Private EC2 Instance (No Public IP)
+- No SSH Access Required
+- AWS Systems Manager Session Manager
+- Amazon S3 Versioning
+- S3 Gateway VPC Endpoint
+- Interface Endpoints
+- Infrastructure as Code
+- Automated Bootstrap
+- Secure IAM Roles
+- Dockerized Deployment
+
+---
+
+# 🛠️ Technology Stack
+
+| Layer | Technology |
+|--------|------------|
+| Frontend | HTML5, CSS3, JavaScript |
+| Backend | Python Flask |
+| WSGI | Gunicorn |
+| Database | MySQL 8 |
+| Containerization | Docker |
+| Local Orchestration | Docker Compose |
+| CI/CD | GitHub Actions |
+| IaC | Terraform |
+| Cloud | AWS |
+| Compute | EC2 |
+| Storage | Amazon S3 |
+| Networking | Amazon VPC |
+| Management | AWS Systems Manager |
+| Orchestration | Kubernetes (Minikube) |
+
+---
+
+# 📂 Project Structure
+
+```
+Personal-Notes-App-V2/
+│
+├── app/
 │   ├── app.py
-│   ├── templates/index.html
-│   ├── static/{css,js}
+│   ├── models.py
+│   ├── templates/
+│   ├── static/
 │   ├── requirements.txt
-│   ├── test_app.py
 │   ├── Dockerfile
-│   ├── .dockerignore
+│   ├── test_app.py
 │   └── .env.example
-├── docker-compose.yml
-├── terraform/                  # Core AWS infrastructure
-│   ├── providers.tf / versions.tf
-│   ├── variables.tf / outputs.tf
-│   ├── network.tf               (VPC, subnets, IGW, route tables)
-│   ├── security.tf              (security groups)
-│   ├── iam.tf                   (IAM role + instance profile)
-│   ├── ec2.tf + user_data.sh.tpl
-│   ├── s3.tf                    (versioned bucket)
-│   ├── vpc_endpoint.tf          (Gateway Endpoint for S3)
+│
+├── terraform/
+│   ├── providers.tf
+│   ├── versions.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── network.tf
+│   ├── security.tf
+│   ├── iam.tf
+│   ├── ec2.tf
+│   ├── s3.tf
+│   ├── vpc_endpoint.tf
+│   ├── user_data.sh.tpl
 │   └── terraform.tfvars.example
-├── terraform-stretch-asg/      # Stretch goal: ALB + ASG (see Part 14)
-├── .github/workflows/ci.yml    # GitHub Actions pipeline
-├── k8s/                         # Kubernetes manifests
-│   ├── configmap.yaml / secret.yaml
-│   ├── mysql.yaml
-│   ├── deployment.yaml / service.yaml
-└── docs/                        # Diagram, demo script, interview Q&A, etc.
+│
+├── docker-compose.yml
+├── k8s/
+├── docs/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+└── README.md
 ```
 
-## ✅ Prerequisites
+---
 
-- Docker & Docker Compose
-- A Docker Hub account
-- Terraform >= 1.6, AWS CLI configured with credentials
-- kubectl + Minikube
-- Python 3.12 (for local dev/testing outside Docker)
-
-## 🚀 Installation & Local Run
+# 🚀 Local Setup
 
 ```bash
-git clone https://github.com/Dilip714/notes-app.git
-cd notes-app
-cp app/.env.example app/.env      # edit with real values
+git clone https://github.com/Dilip714/Personal-Notes-App-V2.git
+
+cd Personal-Notes-App-V2
 ```
 
-## 🐳 Docker Setup
-
-Build and run the backend image directly:
+Create environment file
 
 ```bash
-docker build -t notes-app:v1 ./app     # build image from Dockerfile
-docker run -p 5000:5000 --env-file app/.env notes-app:v1
+cp app/.env.example app/.env
 ```
 
-Run the full stack (app + MySQL) with Compose:
+Run locally
 
 ```bash
-docker compose up -d      # build & start all services in the background
-docker compose logs -f    # follow logs
-docker compose down       # stop and remove containers (add -v to wipe DB volume)
+docker compose up --build
 ```
 
-Visit `http://localhost:5000`.
+Application
 
-### Pushing to Docker Hub
+```
+http://localhost:15000
+```
+
+---
+
+# 🐳 Docker
+
+Build Image
+
+```bash
+docker build -t notes-app:v2 ./app
+```
+
+Run
+
+```bash
+docker run -p 5000:5000 notes-app:v2
+```
+
+Push
 
 ```bash
 docker login
-docker tag notes-app:v1 <dockerhub-user>/notes-app:v1
-docker push <dockerhub-user>/notes-app:v1
-docker tag notes-app:v1 <dockerhub-user>/notes-app:latest
-docker push <dockerhub-user>/notes-app:latest
+
+docker tag notes-app:v2 dilipdev714/notes-app:v2
+
+docker push dilipdev714/notes-app:v2
 ```
 
-`v1` is an immutable, traceable version tag; `latest` is a convenience
-pointer to the newest build — Kubernetes/EC2 deployments should generally
-pin to a specific version tag, not `latest`, for reproducibility.
+---
 
-## ☁️ Terraform Deployment (AWS)
+# ⚙️ CI/CD Pipeline
+
+GitHub Actions automatically performs:
+
+- Checkout Source Code
+- Install Python
+- Install Dependencies
+- Execute Tests
+- Build Docker Image
+- Login to Docker Hub
+- Push Docker Image
+
+Pipeline executes automatically whenever code is pushed to the **main** branch.
+
+---
+
+# ☁️ AWS Infrastructure
+
+Terraform provisions:
+
+- Amazon VPC
+- Internet Gateway
+- Public Subnets
+- Private Subnets
+- Route Tables
+- Security Groups
+- IAM Role
+- IAM Instance Profile
+- EC2 Instance
+- Amazon S3 Bucket
+- S3 Versioning
+- Gateway Endpoint
+- Interface Endpoints
+- Systems Manager Access
+
+Deploy
 
 ```bash
 cd terraform
-cp terraform.tfvars.example terraform.tfvars   # fill in your values
-terraform init      # download AWS provider plugins
-terraform plan       # preview changes
-terraform apply      # provision VPC, subnets, EC2, S3, IAM, VPC endpoint
+
+terraform init
+
+terraform plan
+
+terraform apply
 ```
 
-`terraform destroy` tears everything down when you're done (avoids ongoing
-AWS charges).
-
-## 🪣 S3 Versioning Workflow
+Destroy
 
 ```bash
-aws s3 cp app/static/css/style.css s3://<bucket-name>/css/style.css
-# edit the file, then upload again — this creates a new version
-aws s3 cp app/static/css/style.css s3://<bucket-name>/css/style.css
-aws s3api list-object-versions --bucket <bucket-name> --prefix css/style.css
-# restore an older version by copying it back over the current object
-aws s3api copy-object --bucket <bucket-name> --copy-source "<bucket-name>/css/style.css?versionId=<OLD_VERSION_ID>" --key css/style.css
+terraform destroy
 ```
 
-## 🔒 Gateway VPC Endpoint (verification)
+---
 
-From inside the private EC2 instance (via SSM Session Manager):
+# 🚀 EC2 Bootstrap Process
 
-```bash
-aws s3 ls s3://<bucket-name>   # should succeed with NO internet access
-curl -m 3 https://google.com   # should TIME OUT — confirms no internet path
+During instance launch, EC2 automatically performs:
+
+1. Update packages
+2. Install Docker
+3. Install AWS CLI
+4. Download Docker image archive from Amazon S3
+5. Load Docker image
+6. Run Notes App container
+7. Register with Systems Manager
+
+No manual deployment steps are required.
+
+---
+
+# 🪣 Amazon S3 Deployment Workflow
+
+Instead of pulling the image directly from Docker Hub, the deployment uses:
+
+```
+Docker Image
+
+↓
+
+docker save
+
+↓
+
+notes-app-v2.tar
+
+↓
+
+Amazon S3
+
+↓
+
+Gateway Endpoint
+
+↓
+
+Private EC2
+
+↓
+
+docker load
+
+↓
+
+docker run
 ```
 
-## 🔁 GitHub Actions (CI/CD)
+Benefits:
 
-Add repository secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`, then any
-push to `main` will run tests and push a new image automatically. See
-`.github/workflows/ci.yml`.
+- No NAT Gateway
+- Lower AWS Cost
+- Secure Private Deployment
+- Faster Artifact Distribution
 
-## ☸️ Kubernetes Deployment
+---
+
+# 🔒 Security
+
+- Private EC2
+- No Public IP
+- No SSH Port Open
+- Session Manager Access
+- IAM Roles
+- Private Subnets
+- Gateway Endpoint
+- Interface Endpoints
+- Least Privilege Access
+
+---
+
+# ☸️ Kubernetes Deployment
 
 ```bash
 minikube start
-kubectl apply -f k8s/secret.yaml
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/mysql.yaml
-kubectl apply -f k8s/deployment.yaml
-kubectl apply -f k8s/service.yaml
 
-kubectl get pods -w              # wait for Running
-minikube service notes-app-service --url   # get accessible URL
+kubectl apply -f k8s/
 ```
 
-## ✅ Verification Steps
+Check
 
-- [ ] `docker compose up` starts app + MySQL and UI loads at `:5000`
-- [ ] CRUD operations work end-to-end through the UI
-- [ ] `docker push` succeeds and image appears on Docker Hub
-- [ ] `terraform apply` completes with no errors
-- [ ] EC2 instance has no public IP (check AWS Console)
-- [ ] EC2 can reach S3 but not the general internet
-- [ ] GitHub Actions run is green on push
-- [ ] `kubectl get pods` shows Running pods
-- [ ] NodePort URL loads the app from Minikube
+```bash
+kubectl get pods
 
-## 📸 Screenshots Checklist
+kubectl get svc
+```
 
-See `docs/screenshots-checklist.md`.
+---
 
-## 🔭 Future Enhancements
+# ✅ Verification
 
-- Add HTTPS via an ALB + ACM certificate
-- Move MySQL to RDS with automated backups
-- Add Helm chart for the Kubernetes deployment
-- Implement the Part 14 stretch goal (ALB + ASG) — see `terraform-stretch-asg/`
-- Add centralized logging (CloudWatch Agent / Fluent Bit)
+### Docker
 
-## 🎯 Conclusion
+- Docker Image Built
+- Docker Compose Working
 
-This project demonstrates a realistic, security-conscious DevOps pipeline
-end-to-end: from local containerized development, through automated CI/CD,
-to a private, cost-optimized AWS deployment and Kubernetes orchestration —
-using patterns (private subnets, Gateway Endpoints, IaC, immutable image
-tags) that reflect real production practice rather than a toy demo.
+### AWS
+
+- Terraform Apply Successful
+- EC2 Running
+- Private Subnet
+- S3 Bucket Created
+- Gateway Endpoint Working
+- Session Manager Connected
+
+### Application
+
+```bash
+sudo docker ps
+```
+
+Health Check
+
+```bash
+curl http://localhost:5000/health
+```
+
+Output
+
+```json
+{
+    "status":"ok"
+}
+```
+
+---
+
+# 🏆 Project Achievements
+
+✔ Dockerized Flask Application
+
+✔ GitHub Actions CI/CD
+
+✔ Infrastructure as Code using Terraform
+
+✔ AWS Private Networking
+
+✔ Amazon S3 Versioning
+
+✔ Gateway VPC Endpoint
+
+✔ Session Manager
+
+✔ Kubernetes Deployment
+
+✔ Automated EC2 Bootstrap
+
+✔ Production-style Architecture
+
+---
+
+# 📸 Screenshots
+
+Recommended screenshots:
+
+- Local Application
+- Docker Containers
+- Docker Hub Repository
+- GitHub Actions Success
+- Terraform Apply
+- AWS VPC
+- EC2 Instance
+- S3 Bucket
+- Session Manager
+- Docker Running on EC2
+- Health Check
+- Kubernetes Pods
+
+---
+
+# 🚀 Future Improvements
+
+- Application Load Balancer
+- Auto Scaling Group
+- Amazon RDS
+- Amazon ECR
+- CloudWatch Dashboard
+- Helm Charts
+- HTTPS using ACM
+- Monitoring with Prometheus & Grafana
+
+---
+
+# 🎯 Learning Outcomes
+
+This project demonstrates practical experience with:
+
+- Docker
+- Docker Compose
+- GitHub Actions
+- Terraform
+- AWS VPC
+- EC2
+- IAM
+- Amazon S3
+- Gateway Endpoints
+- Systems Manager
+- Kubernetes
+- Infrastructure as Code
+- DevOps Best Practices
+
+---
+
+# 👨‍💻 Author
+
+**Dilip Kumar**
+
+GitHub:
+https://github.com/Dilip714
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.

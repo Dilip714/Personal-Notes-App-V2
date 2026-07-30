@@ -1,24 +1,30 @@
 #!/bin/bash
-# Runs once on first boot. Installs Docker, starts the daemon, and launches
-# the Notes App container automatically — no manual SSH steps needed.
 set -euxo pipefail
 
-# 1. Update packages
+# Update packages
 dnf update -y
 
-# 2. Install Docker
-dnf install -y docker
+# Install Docker and AWS CLI
+dnf install -y docker awscli
 
-# 3. Start and enable the Docker service (survives reboots)
-systemctl start docker
+# Enable Docker
 systemctl enable docker
+systemctl start docker
 
-# 4. Pull the app image from Docker Hub
-docker pull ${docker_image}
+# Download Docker image from S3
+aws s3 cp \
+s3://notes-app-v2-static-assets-582500932246/notes-app-v2.tar \
+/tmp/notes-app-v2.tar
 
-# 5. Run the Notes App container
+# Load Docker image
+docker load -i /tmp/notes-app-v2.tar
+
+# Remove archive
+rm -f /tmp/notes-app-v2.tar
+
+# Run container
 docker run -d \
   --name notes-app \
   --restart unless-stopped \
   -p ${app_port}:${app_port} \
-  ${docker_image}
+  dilipdev714/notes-app:v2
