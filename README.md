@@ -339,6 +339,25 @@ Benefits:
 - Secure Private Deployment
 - Faster Artifact Distribution
 
+## Amazon S3 Versioning
+
+Amazon S3 Versioning was enabled on the bucket used for application static assets.
+
+Demonstrated:
+
+- Uploaded multiple versions of `style.css`
+- Listed object versions using the AWS CLI
+- Restored a previous version using:
+
+```bash
+aws s3api copy-object \
+--bucket notes-app-v2-static-assets-582500932246 \
+--copy-source "notes-app-v2-static-assets-582500932246/css/style.css?versionId=<OLD_VERSION_ID>" \
+--key css/style.css
+```
+
+This demonstrates object recovery without deleting existing versions.
+
 ---
 
 # 🔒 Security
