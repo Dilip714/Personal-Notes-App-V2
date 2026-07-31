@@ -12,7 +12,7 @@ resource "aws_launch_template" "notes_app" {
   ]
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh.tpl", {
-    bucket_name = aws_s3_bucket.static_assets.bucket
+    bucket_name = aws_s3_bucket.assets.bucket
     app_port    = var.app_port
   }))
 

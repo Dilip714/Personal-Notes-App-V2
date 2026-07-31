@@ -10,12 +10,16 @@ output "private_subnet_ids" {
   value = aws_subnet.private[*].id
 }
 
-output "ec2_instance_id" {
-  value = aws_instance.app.id
+output "alb_dns_name" {
+  value = aws_lb.app.dns_name
 }
 
-output "ec2_private_ip" {
-  value = aws_instance.app.private_ip
+output "asg_name" {
+  value = aws_autoscaling_group.app.name
+}
+
+output "target_group_arn" {
+  value = aws_lb_target_group.app.arn
 }
 
 output "s3_bucket_name" {

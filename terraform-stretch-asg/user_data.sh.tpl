@@ -12,10 +12,8 @@ systemctl enable docker
 systemctl start docker
 
 # Download Docker image from S3
-aws s3 cp \
-s3://notes-app-v2-static-assets-582500932246/notes-app-v2.tar \
-/tmp/notes-app-v2.tar
-
+# Download Docker image from S3
+aws s3 cp "s3://${bucket_name}/notes-app-v2.tar" "/tmp/notes-app-v2.tar"
 # Load Docker image
 docker load -i /tmp/notes-app-v2.tar
 
