@@ -3,6 +3,7 @@
 
 A production-style DevOps project demonstrating the complete software delivery lifecycle using **Docker**, **GitHub Actions**, **Terraform**, **AWS**, **Amazon S3**, **AWS Systems Manager**, and **Kubernetes**.
 
+[![Demo Video](https://img.shields.io/badge/Demo-Video-red?logo=youtube&logoColor=white)](https://drive.google.com/file/d/1ae2s9nPz4r1gUaTBfZZ3Zgsan5DmcDxm/view?usp=sharing)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)
 ![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazonaws&logoColor=white)
@@ -11,6 +12,7 @@ A production-style DevOps project demonstrating the complete software delivery l
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Backend-Flask-black?logo=flask)
 ![License](https://img.shields.io/badge/License-MIT-green)
+
 
 ---
 
@@ -25,7 +27,11 @@ The application is deployed in two different environments:
 - ☁️ **AWS Private EC2** using Terraform
 - ☸️ **Kubernetes (Minikube)**
 
-Unlike a traditional deployment that pulls Docker images directly from Docker Hub, this project packages the Docker image as a TAR archive, uploads it to Amazon S3, and deploys it securely to a private EC2 instance through an Amazon S3 Gateway VPC Endpoint.
+The project demonstrates two deployment strategies.
+
+The application image is automatically built and pushed to Docker Hub using GitHub Actions.
+
+For AWS deployment, the Docker image is packaged as a TAR archive, uploaded to Amazon S3, and securely deployed to a private EC2 instance through an Amazon S3 Gateway VPC Endpoint without requiring a NAT Gateway.
 
 This approach eliminates the need for a NAT Gateway while keeping the application completely private.
 
@@ -475,14 +481,31 @@ Recommended screenshots:
 
 # 🚀 Future Improvements
 
-- Application Load Balancer
-- Auto Scaling Group
-- Amazon RDS
-- Amazon ECR
-- CloudWatch Dashboard
-- Helm Charts
-- HTTPS using ACM
-- Monitoring with Prometheus & Grafana
+# 🚀 Future Improvements
+
+- Deploy the application on Amazon EKS
+- Store container images in Amazon ECR
+- Replace MySQL with Amazon RDS
+- Configure HTTPS using AWS Certificate Manager (ACM)
+- Add a custom domain using Route 53
+- Monitor the application with Prometheus & Grafana
+- Configure CloudWatch dashboards and alarms
+- Package Kubernetes resources using Helm
+
+# ⭐ Stretch Goal
+
+The optional stretch goal was successfully implemented.
+
+Implemented:
+
+- Application Load Balancer (ALB)
+- Launch Template
+- Auto Scaling Group (ASG)
+- Multi-AZ deployment
+- Health Checks
+- Internet-facing Application Endpoint
+
+This architecture improves scalability, high availability, and fault tolerance.
 
 ---
 
@@ -503,6 +526,44 @@ This project demonstrates practical experience with:
 - Kubernetes
 - Infrastructure as Code
 - DevOps Best Practices
+
+# 🎥 Project Demo
+
+A short demonstration of the Personal Notes App covering:
+
+- Dockerized Flask application
+- GitHub Actions CI/CD pipeline
+- Terraform-based AWS infrastructure
+- Private EC2 deployment
+- Amazon S3 Versioning
+- Gateway VPC Endpoint
+- Kubernetes deployment using Minikube
+- Stretch Goal: Application Load Balancer & Auto Scaling Group
+
+📺 **Watch the complete project demonstration here:**
+
+[▶ Watch Demo Video](https://drive.google.com/file/d/1ae2s9nPz4r1gUaTBfZZ3Zgsan5DmcDxm/view?usp=sharing)
+
+# ✅ Assignment Completion
+
+| Requirement | Status |
+|-------------|--------|
+| Notes App | ✅ |
+| Docker | ✅ |
+| Docker Hub | ✅ |
+| Terraform | ✅ |
+| Public & Private Subnets | ✅ |
+| EC2 in Private Subnet | ✅ |
+| User Data | ✅ |
+| S3 Versioning | ✅ |
+| Restore Previous Version | ✅ |
+| Gateway VPC Endpoint | ✅ |
+| GitHub Actions | ✅ |
+| Kubernetes Deployment | ✅ |
+| NodePort | ✅ |
+| Architecture Diagram | ✅ |
+| README | ✅ |
+| Stretch Goal (ALB + ASG) | ✅ |
 
 ---
 
