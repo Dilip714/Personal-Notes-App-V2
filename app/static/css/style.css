@@ -13,10 +13,9 @@
 body {
   margin: 0;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: lightgreen;
+  background: var(--bg);
   color: var(--text);
 }
-
 .container {
   max-width: 900px;
   margin: 0 auto;
