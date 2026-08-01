@@ -7,22 +7,23 @@ dnf update -y
 # Install Docker and AWS CLI
 dnf install -y docker awscli
 
-# Enable Docker
+# Enable and start Docker
 systemctl enable docker
 systemctl start docker
 
-# Download Docker image from S3
+# Download the pre-built Docker image archive from S3.
+# The private instance reaches S3 through the Gateway VPC Endpoint.
 aws s3 cp \
-s3://notes-app-v2-static-assets-582500932246/notes-app-v2.tar \
-/tmp/notes-app-v2.tar
+  s3://${bucket_name}/notes-app-v2.tar \
+  /tmp/notes-app-v2.tar
 
 # Load Docker image
 docker load -i /tmp/notes-app-v2.tar
 
-# Remove archive
+# Remove temporary archive
 rm -f /tmp/notes-app-v2.tar
 
-# Run container
+# Run the application
 docker run -d \
   --name notes-app \
   --restart unless-stopped \

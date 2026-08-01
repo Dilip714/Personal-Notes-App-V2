@@ -24,3 +24,22 @@ resource "aws_s3_bucket_public_access_block" "assets" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+# ---------------------------------------------------------------------------
+# Docker Image Deployment Artifact
+#
+# Uploads the locally exported Docker image to S3.
+# Private EC2 instances download this archive through the
+# S3 Gateway VPC Endpoint during User Data bootstrap.
+# ---------------------------------------------------------------------------
+
+resource "aws_s3_object" "docker_image_archive" {
+  bucket = aws_s3_bucket.assets.id
+  key    = "notes-app-v2.tar"
+  source = "${path.module}/../notes-app-v2.tar"
+
+  etag = filemd5("${path.module}/../notes-app-v2.tar")
+
+  depends_on = [
+    aws_s3_bucket_versioning.assets
+  ]
+}

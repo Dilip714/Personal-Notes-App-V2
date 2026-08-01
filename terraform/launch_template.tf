@@ -1,4 +1,10 @@
+# ---------------------------------------------------------------------------
+# Launch Template - Stretch Goal
+# ---------------------------------------------------------------------------
+
 resource "aws_launch_template" "notes_app" {
+  count = var.enable_asg ? 1 : 0
+
   name_prefix   = "${var.project_name}-lt-"
   image_id      = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
@@ -20,7 +26,7 @@ resource "aws_launch_template" "notes_app" {
     resource_type = "instance"
 
     tags = {
-      Name = "${var.project_name}-app"
+      Name = "${var.project_name}-asg-instance"
     }
   }
 }

@@ -57,3 +57,30 @@ variable "app_port" {
   type        = number
   default     = 5000
 }
+# ---------------------------------------------------------------------------
+# Deployment Mode
+# ---------------------------------------------------------------------------
+
+variable "enable_asg" {
+  description = "Deploy ALB + Auto Scaling Group instead of a single EC2 instance"
+  type        = bool
+  default     = false
+}
+
+variable "asg_min_size" {
+  description = "Minimum number of instances in the Auto Scaling Group"
+  type        = number
+  default     = 2
+}
+
+variable "asg_desired_capacity" {
+  description = "Desired number of instances in the Auto Scaling Group"
+  type        = number
+  default     = 2
+}
+
+variable "asg_max_size" {
+  description = "Maximum number of instances in the Auto Scaling Group"
+  type        = number
+  default     = 4
+}

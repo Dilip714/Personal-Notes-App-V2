@@ -1,14 +1,16 @@
-# Security group for the app EC2 instance.
-# No inbound rule from 0.0.0.0/0 on purpose — the instance is private.
-# Inbound is restricted to the VPC CIDR only (e.g. for a future internal
-# load balancer or bastion/SSM access).
+# ---------------------------------------------------------------------------
+# Application Security Group
+# ---------------------------------------------------------------------------
+
 resource "aws_security_group" "app" {
   name        = "${var.project_name}-app-sg"
-  description = "Security group for the private Notes App EC2 instance"
+  description = "Security group for private Notes App instances"
   vpc_id      = aws_vpc.main.id
 
+  # Base deployment:
+  # Allow application traffic from within the VPC.
   ingress {
-    description = "App port, VPC-internal only"
+    description = "Application traffic from inside VPC"
     from_port   = var.app_port
     to_port     = var.app_port
     protocol    = "tcp"
@@ -16,7 +18,7 @@ resource "aws_security_group" "app" {
   }
 
   ingress {
-    description = "SSH, VPC-internal only (bastion/SSM use)"
+    description = "SSH from inside VPC only"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -24,7 +26,7 @@ resource "aws_security_group" "app" {
   }
 
   egress {
-    description = "Allow all outbound (needed to pull Docker image via S3/registry paths)"
+    description = "Allow outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -35,7 +37,44 @@ resource "aws_security_group" "app" {
     Name = "${var.project_name}-app-sg"
   }
 }
-# Security Group for Interface VPC Endpoints
+
+# ---------------------------------------------------------------------------
+# ALB Security Group
+#
+# Created only when the stretch goal is enabled.
+# ---------------------------------------------------------------------------
+
+resource "aws_security_group" "alb" {
+  count = var.enable_asg ? 1 : 0
+
+  name        = "${var.project_name}-alb-sg"
+  description = "Security group for public Application Load Balancer"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "HTTP from Internet"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-alb-sg"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Interface VPC Endpoint Security Group
+# ---------------------------------------------------------------------------
 
 resource "aws_security_group" "endpoint" {
   name        = "${var.project_name}-endpoint-sg"
@@ -51,6 +90,7 @@ resource "aws_security_group" "endpoint" {
   }
 
   egress {
+    description = "Allow outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
